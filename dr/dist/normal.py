@@ -9,5 +9,4 @@ class Normal(EnvironmentDistribution):
 
     def _sample(self, params):
         params = np.random.normal(params, scale=self.scale)
-        print(params)
         return params
