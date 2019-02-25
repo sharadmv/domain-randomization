@@ -5,10 +5,15 @@ verify_ssl = true
 
 [dev-packages]
 jupyter = "*"
+ipdb = "*"
 
 [packages]
 dr = {path = ".",editable = true}
-gym = {git = "https://github.com/DartEnv/dart-env"}
+gym = {git = "https://github.com/DartEnv/dart-env",editable = true}
+pydart = {git = "https://github.com/sehoonha/pydart2",editable = true}
+mujoco-py = "*"
+PyQt5 = "*"
+joblib = "*"
 
 [requires]
 python_version = "3.7"

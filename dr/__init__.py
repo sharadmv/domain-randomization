@@ -1,2 +1,2 @@
-from dr.env_dist import EnvironmentDistribution
+import dr.dist
 import dr.gym
