@@ -8,6 +8,7 @@ jupyter = "*"
 
 [packages]
 dr = {path = ".",editable = true}
+gym = {git = "https://github.com/DartEnv/dart-env"}
 
 [requires]
 python_version = "3.7"
