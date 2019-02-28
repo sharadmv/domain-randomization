@@ -10,6 +10,8 @@ class Normal(EnvironmentDistribution):
         super(Normal, self).__init__(*args, **kwargs)
 
     def _sample(self, params):
+        if self.scale == 0.0:
+            return params.copy()
 
         # Sample gravity parameter
         gravity = np.random.normal(params['gravity'], scale=self.scale)

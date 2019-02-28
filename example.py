@@ -1,7 +1,7 @@
 import numpy as np
 import dr
 
-dist = dr.dist.Normal('Hopper', 'dart', stdev=10)
+dist = dr.dist.Normal('Hopper', 'dart', stdev=0.1)
 
 def sample_action():
     return np.random.uniform(low=env.action_space.low, high=env.action_space.high)
