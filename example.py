@@ -1,12 +1,12 @@
 import numpy as np
 import dr
 
-dist = dr.dist.Normal('Hopper', 'dart', stdev=0.1)
+dist = dr.dist.Normal('Hopper', 'dart', stdev=10)
 
 def sample_action():
     return np.random.uniform(low=env.action_space.low, high=env.action_space.high)
 
-def sample_trajectory(length=10):
+def sample_trajectory(length=1000):
     env.reset()
     env.render()
     for _ in range(length):

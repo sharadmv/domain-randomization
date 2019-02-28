@@ -1,3 +1,5 @@
+import numpy as np
+
 from dr.backend.base import Backend
 
 class DartBackend(Backend):
@@ -15,7 +17,7 @@ class DartBackend(Backend):
         return self.get_world(env).skeletons[1].bodynodes[2:]
 
     def get_masses(self, env):
-        return [b.mass() for b in self._get_limbs(env)]
+        return np.array([b.mass() for b in self._get_limbs(env)])
 
     def set_masses(self, env, masses):
         for limb, mass in zip(self._get_limbs(env), masses):
@@ -33,7 +35,7 @@ class DartBackend(Backend):
 
     def get_damping_coefficients(self, env):
         limbs = self._get_limbs(env)
-        return [joint.damping_coefficient() for limb in limbs for joint in limb.parent_joint.dofs]
+        return np.array([joint.damping_coefficient() for limb in limbs for joint in limb.parent_joint.dofs])
 
     def set_damping_coefficients(self, env, damping_coefficients):
         limbs = self._get_limbs(env)

@@ -14,7 +14,7 @@ class MujocoBackend(Backend):
         return env.env.model
 
     def get_masses(self, env):
-        return self.get_world(env).body_mass[1:]
+        return np.array(self.get_world(env).body_mass[1:])
 
     def set_masses(self, env, masses):
         self.get_world(env).body_mass[1:] = masses
