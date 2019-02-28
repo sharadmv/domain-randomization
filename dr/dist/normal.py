@@ -8,5 +8,7 @@ class Normal(EnvironmentDistribution):
         super(Normal, self).__init__(*args, **kwargs)
 
     def _sample(self, params):
-        params = np.random.normal(params, scale=self.scale)
-        return params
+        return {
+            k: np.random.normal(v, scale=self.scale)
+            for k, v in params.items()
+        }
