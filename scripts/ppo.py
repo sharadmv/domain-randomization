@@ -3,6 +3,16 @@ from baselines.common import tf_util as U
 from baselines import logger
 
 import dr
+import tensorflow as tf
+import numpy as np
+import random
+
+
+def set_global_seeds(i):
+    tf.set_random_seed(i)
+    np.random.seed(i)
+    random.seed(i)
+
 
 def train(env_id, backend, num_timesteps, seed, stdev=0., collision_detector='bullet'):
     from baselines.ppo1 import mlp_policy, pposgd_simple
@@ -13,9 +23,12 @@ def train(env_id, backend, num_timesteps, seed, stdev=0., collision_detector='bu
     env_dist = dr.dist.Normal(env_id, backend, stdev=stdev)
     env_dist.seed(seed)
     env = env_dist.sample()
+    set_global_seeds(seed)
+
     print("Collision detector:", env_dist.backend.get_world(env).collision_detector())
     env_dist.backend.set_collision_detector(env, collision_detector)
     print("Collision detector:", env_dist.backend.get_world(env).collision_detector())
+
     pposgd_simple.learn(env, policy_fn,
             max_timesteps=num_timesteps,
             timesteps_per_actorbatch=2048,
