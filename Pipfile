@@ -9,12 +9,16 @@ ipdb = "*"
 
 [packages]
 dr = {path = ".",editable = true}
-gym = {git = "https://github.com/DartEnv/dart-env",editable = true}
+gym = {git = "https://github.com/quanvuong/dart-env.git",editable = true}
 pydart = {git = "https://github.com/sehoonha/pydart2",editable = true}
 mujoco-py = "*"
 PyQt5 = "*"
 joblib = "*"
 scipy = "*"
+baselines = {git = "https://github.com/openai/baselines.git",editable = true}
+tensorflow-gpu = "==1.4.0"
+jupyter = "*"
+mpi4py = "*"
 
 [requires]
-python_version = "3.7"
+python_version = "3.6"
