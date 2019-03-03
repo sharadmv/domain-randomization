@@ -22,5 +22,25 @@ class Backend(object, metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def get_gravity(self, env):
+        pass
+
+    @abstractmethod
     def set_gravity(self, env, g):
+        pass
+
+    @abstractmethod
+    def get_damping_coefficients(self, env):
+        pass
+
+    @abstractmethod
+    def set_damping_coefficients(self, env, damping_coefficients):
+        pass
+
+    @abstractmethod
+    def get_collision_detector(self, env):
+        pass
+
+    @abstractmethod
+    def set_collision_detector(self, env, collision_detector):
         pass

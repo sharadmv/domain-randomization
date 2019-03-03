@@ -4,7 +4,7 @@ from baselines import logger
 
 import dr
 
-def train(env_id, backend, num_timesteps, seed, stdev=0.):
+def train(env_id, backend, num_timesteps, seed, stdev=0., collision_detector='bullet'):
     from baselines.ppo1 import mlp_policy, pposgd_simple
     U.make_session(num_cpu=1).__enter__()
     def policy_fn(name, ob_space, ac_space):
@@ -13,6 +13,9 @@ def train(env_id, backend, num_timesteps, seed, stdev=0.):
     env_dist = dr.dist.Normal(env_id, backend, stdev=stdev)
     env_dist.seed(seed)
     env = env_dist.sample()
+    print("Collision detector:", env_dist.backend.get_world(env).collision_detector())
+    env_dist.backend.set_collision_detector(env, collision_detector)
+    print("Collision detector:", env_dist.backend.get_world(env).collision_detector())
     pposgd_simple.learn(env, policy_fn,
             max_timesteps=num_timesteps,
             timesteps_per_actorbatch=2048,
@@ -25,13 +28,15 @@ def train(env_id, backend, num_timesteps, seed, stdev=0.):
 def parse_args():
     argparser = common_arg_parser()
     argparser.add_argument('--backend', type=str, default='dart')
+    argparser.add_argument('--collision_detector', type=str, default='bullet')
     argparser.set_defaults(env='Hopper')
     return argparser.parse_args()
 
 def main():
     args = parse_args()
     logger.configure()
-    train(args.env, args.backend, num_timesteps=args.num_timesteps, seed=args.seed)
+    train(args.env, args.backend, num_timesteps=args.num_timesteps, seed=args.seed,
+          collision_detector=args.collision_detector)
 
 if __name__ == '__main__':
     main()
