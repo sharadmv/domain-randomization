@@ -17,7 +17,6 @@ joblib = "*"
 scipy = "*"
 baselines = {git = "https://github.com/openai/baselines.git",editable = true}
 tensorflow-gpu = "==1.4.0"
-jupyter = "*"
 mpi4py = "*"
 
 [requires]
