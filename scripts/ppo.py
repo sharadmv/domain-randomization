@@ -4,6 +4,15 @@ from baselines.common import tf_util as U
 from baselines import logger
 
 import dr
+import numpy as np
+import random
+
+
+def set_global_seeds(i):
+    tf.set_random_seed(i)
+    np.random.seed(i)
+    random.seed(i)
+
 
 def train(env_id, backend, num_timesteps, seed, stdev=0., collision_detector='bullet'):
     tf.set_random_seed(seed)
@@ -17,6 +26,8 @@ def train(env_id, backend, num_timesteps, seed, stdev=0., collision_detector='bu
     env = env_dist.sample()
     env.seed(seed)
     env_dist.backend.set_collision_detector(env, collision_detector)
+    set_global_seeds(seed)
+
     pposgd_simple.learn(env, policy_fn,
             max_timesteps=num_timesteps,
             timesteps_per_actorbatch=2048,
