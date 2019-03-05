@@ -3,6 +3,7 @@ from abc import abstractmethod, ABCMeta
 
 from dr.backend import get_backend
 from dr.envs import get_driver
+import copy
 
 class EnvironmentDistribution(object, metaclass=ABCMeta):
 
@@ -12,16 +13,18 @@ class EnvironmentDistribution(object, metaclass=ABCMeta):
         self.env_driver = get_driver(env_name, self.backend)
         self.root_env = self.backend.make(self.env_name)
         self.root_env.env.disableViewer = False
-        self.default_parameters = self.env_driver.get_parameters(self.root_env)
+        self.default_parameters = copy.deepcopy(self.env_driver.get_parameters(self.root_env))
         self._seed = None
 
     def sample(self, in_place=True):
-        if self.in_place:
+        if in_place:
             env = self.root_env
+            parameters = self.default_parameters
         else:
             env = self.backend.make(self.env_name)
             env.env.disableViewer = False
-        parameters = self.env_driver.get_parameters(env)
+            parameters = self.env_driver.get_parameters(env)
+
         parameters = self._sample(parameters)
         self.env_driver.set_parameters(env, parameters)
         return env
