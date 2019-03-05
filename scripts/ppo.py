@@ -46,6 +46,9 @@ def parse_args():
 
 def main():
     args = parse_args()
+
+    print('\n', args, '\n')
+
     logger.configure()
     train(args.env, args.backend, num_timesteps=args.num_timesteps, seed=args.seed,
           collision_detector=args.collision_detector)
