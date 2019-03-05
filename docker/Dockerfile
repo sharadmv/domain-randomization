@@ -66,7 +66,7 @@ RUN sudo pip3 install pipenv
 RUN mkdir /root/work
 WORKDIR /root/work
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN --mount=type=ssh git clone git@github.com:sharadmv/domain-randomization.git
+RUN git clone https://github.com/sharadmv/domain-randomization.git
 
 WORKDIR /root/work/domain-randomization
 RUN pipenv install -v tensorflow-gpu==1.4
