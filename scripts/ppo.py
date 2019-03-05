@@ -42,6 +42,7 @@ def parse_args():
     argparser.add_argument('--backend', type=str, default='dart')
     argparser.add_argument('--collision_detector', type=str, default='bullet')
     argparser.set_defaults(env='Hopper')
+    argparser.set_defaults(seed=0)
     return argparser.parse_args()
 
 def main():
