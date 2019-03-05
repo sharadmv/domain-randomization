@@ -15,7 +15,7 @@ mujoco-py = "*"
 PyQt5 = "*"
 joblib = "*"
 scipy = "*"
-baselines = {git = "https://github.com/openai/baselines.git",editable = true}
+baselines = {git = "https://github.com/quanvuong/baselines.git",editable = true}
 tensorflow-gpu = "==1.4.0"
 mpi4py = "*"
 
