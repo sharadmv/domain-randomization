@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:experimental
-FROM sharadmv/domain-randomization
+FROM sharadmv/domain-randomization:latest
 
 WORKDIR /root/work/domain-randomization
 RUN pipenv run pip uninstall -y tensorflow-gpu
