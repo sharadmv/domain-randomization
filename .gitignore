@@ -105,3 +105,4 @@ venv.bak/
 .idea/
 
 MUJOCO_LOG.TXT
+out/
