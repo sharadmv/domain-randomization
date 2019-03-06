@@ -24,6 +24,7 @@ path-py = "*"
 boto3 = "*"
 click = "*"
 gitpython = "*"
+mpi4py = "*"
 
 [requires]
 python_version = "3.6"
