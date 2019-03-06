@@ -19,10 +19,10 @@ def set_global_seeds(i):
 
 class PPO(Experiment):
 
-    def __init__(self, experiment_name, env,
+    def __init__(self, experiment_name, env_params,
                  num_timesteps,
                  seed, **kwargs):
-        self.env_params = env
+        self.env_params = env_params
         self.num_timesteps = num_timesteps
         self.seed = seed
         super(PPO, self).__init__(experiment_name, **kwargs)
