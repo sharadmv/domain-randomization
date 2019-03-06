@@ -106,3 +106,4 @@ venv.bak/
 
 MUJOCO_LOG.TXT
 out/
+runs
