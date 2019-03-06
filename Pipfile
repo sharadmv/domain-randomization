@@ -16,8 +16,7 @@ PyQt5 = "*"
 joblib = "*"
 scipy = "*"
 baselines = {git = "https://github.com/quanvuong/baselines.git",editable = true}
-tensorflow-gpu = "==1.4.0"
-mpi4py = "*"
+tensorflow = "==1.13.1"
 
 [requires]
 python_version = "3.6"
