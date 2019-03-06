@@ -1,5 +1,4 @@
-# syntax=docker/dockerfile:experimental
-FROM nvidia/cuda:8.0-cudnn6-runtime-ubuntu14.04
+FROM nvidia/cuda:10.0-cudnn7-runtime-ubuntu14.04
 
 RUN sudo apt-get update && sudo apt-get -y upgrade
 RUN sudo apt-get update && sudo apt-get install -y software-properties-common
@@ -24,9 +23,10 @@ RUN sudo apt-get update &&  sudo apt-get install -y \
       doxygen \
       python3.6-dev unzip \
       libxrandr-dev libosmesa-dev libxinerama-dev libxcursor-dev \
+      libtcmalloc-minimal4 \
       swig
 
-ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/mesa/libGL.so
+ENV LD_PRELOAD=/usr/lib/x86_64-linux-gnu/mesa/libGL.so:/usr/lib/libtcmalloc_minimal.so.4
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/root/.mujoco/mjpro150/bin
@@ -66,8 +66,9 @@ RUN sudo pip3 install pipenv
 RUN mkdir /root/work
 WORKDIR /root/work
 RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
-RUN git clone https://github.com/sharadmv/domain-randomization.git
 
+RUN git clone https://github.com/sharadmv/domain-randomization.git
 WORKDIR /root/work/domain-randomization
-RUN pipenv install -v tensorflow-gpu==1.4
-RUN pipenv install -v
+RUN git pull origin master; git checkout a425733
+RUN pipenv install tensorflow
+RUN mkdir /root/.aws; echo '[default]\nregion = us-west-2' > ~/.aws/config
