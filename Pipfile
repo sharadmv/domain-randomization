@@ -17,6 +17,13 @@ joblib = "*"
 scipy = "*"
 baselines = {git = "https://github.com/quanvuong/baselines.git",editable = true}
 tensorflow = "==1.13.1"
+parasol = {git = "https://github.com/sharadmv/parasol.git",editable = true}
+deepx = "*"
+fabric = "*"
+path-py = "*"
+boto3 = "*"
+click = "*"
+gitpython = "*"
 
 [requires]
 python_version = "3.6"
