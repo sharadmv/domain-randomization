@@ -7,7 +7,7 @@ repo = Repo('./')
 branch = repo.active_branch.name
 
 @click.command()
-@click.option('--experiment_name', type=str, default=branch)
+@click.option('--experiment_name', type=str, default=branch + '_' + datetime.now().strftime('%b%d_%H-%M-%S'))
 @click.option('--env_name', type=str, default='Hopper')
 @click.option('--backend', type=str, default='dart')
 @click.option('--collision_detector', type=str, default='bullet')
