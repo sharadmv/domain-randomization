@@ -10,6 +10,8 @@ gfile = tf.gfile
 from parasol.experiment import Experiment
 
 import dr
+from datetime import datetime
+
 
 def set_global_seeds(i):
     tf.set_random_seed(i)
@@ -40,7 +42,7 @@ class PPO(Experiment):
             'git_hash': sha
         }
 
-    def train(self, env_id, backend, num_timesteps, seed, stdev=0.,
+    def train(self, env_id, backend, num_timesteps, seed, viz_logdir, stdev=0.,
               collision_detector='bullet'):
         from baselines.ppo1 import mlp_policy, pposgd_simple
         U.make_session(num_cpu=1).__enter__()
@@ -56,7 +58,7 @@ class PPO(Experiment):
                 timesteps_per_actorbatch=2048,
                 clip_param=0.2, entcoeff=0.0,
                 optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
-                gamma=0.99, lam=0.95, schedule='linear',
+                gamma=0.99, lam=0.95, schedule='linear', viz_logdir=viz_logdir
             )
 
     def run_experiment(self, out_dir):
@@ -70,5 +72,7 @@ class PPO(Experiment):
         seed = self.train_params['seed']
         stdev = self.train_params['env_dist_stdev']
 
-        self.train(env_name, backend, num_timesteps=num_ts, seed=seed,
-                   collision_detector=collision_detector, stdev=stdev)
+        viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
+
+        self.train(env_name, backend, num_timesteps=num_ts, seed=seed, viz_logdir=viz_logdir,
+                   collision_detector=collision_detector, stdev=stdev, )
