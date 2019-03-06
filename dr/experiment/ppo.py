@@ -35,7 +35,7 @@ class PPO(Experiment):
         repo = git.Repo(search_parent_directories=True)
         sha = repo.head.object.hexsha
         return {
-            'env': self.env_params,
+            'env_params': self.env_params,
             'train_params': self.train_params,
             'git_hash': sha
         }
