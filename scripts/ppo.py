@@ -1,8 +1,13 @@
 import click
 import dr
 
+from git import Repo
+
+repo = Repo('./')
+branch = repo.active_branch.name
+
 @click.command()
-@click.argument('experiment_name')
+@click.option('--experiment_name', type=str, default=branch)
 @click.option('--env_name', type=str, default='Hopper')
 @click.option('--backend', type=str, default='dart')
 @click.option('--collision_detector', type=str, default='bullet')
