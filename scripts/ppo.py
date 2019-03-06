@@ -2,6 +2,7 @@ import click
 import dr
 
 from git import Repo
+from datetime import datetime
 
 repo = Repo('./')
 branch = repo.active_branch.name
