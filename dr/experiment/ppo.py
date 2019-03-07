@@ -10,6 +10,8 @@ gfile = tf.gfile
 from parasol.experiment import Experiment
 
 import dr
+from datetime import datetime
+
 
 def set_global_seeds(i):
     tf.set_random_seed(i)
@@ -19,12 +21,9 @@ def set_global_seeds(i):
 
 class PPO(Experiment):
 
-    def __init__(self, experiment_name, env,
-                 num_timesteps,
-                 seed, **kwargs):
-        self.env_params = env
-        self.num_timesteps = num_timesteps
-        self.seed = seed
+    def __init__(self, experiment_name, env_params, train_params, **kwargs):
+        self.env_params = env_params
+        self.train_params = train_params
         super(PPO, self).__init__(experiment_name, **kwargs)
 
     def from_dict(self, params):
@@ -38,13 +37,12 @@ class PPO(Experiment):
         repo = git.Repo(search_parent_directories=True)
         sha = repo.head.object.hexsha
         return {
-            'env': self.env_params,
-            'num_timesteps': self.num_timesteps,
-            'seed': self.seed,
+            'env_params': self.env_params,
+            'train_params': self.train_params,
             'git_hash': sha
         }
 
-    def train(self, env_id, backend, num_timesteps, seed, stdev=0.,
+    def train(self, env_id, backend, num_timesteps, seed, viz_logdir, stdev=0.,
               collision_detector='bullet'):
         from baselines.ppo1 import mlp_policy, pposgd_simple
         U.make_session(num_cpu=1).__enter__()
@@ -60,13 +58,21 @@ class PPO(Experiment):
                 timesteps_per_actorbatch=2048,
                 clip_param=0.2, entcoeff=0.0,
                 optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
-                gamma=0.99, lam=0.95, schedule='linear',
+                gamma=0.99, lam=0.95, schedule='linear', viz_logdir=viz_logdir
             )
 
     def run_experiment(self, out_dir):
         logger.configure()
+
         env_name = self.env_params['env_name']
         backend = self.env_params['backend']
         collision_detector = self.env_params['collision_detector']
-        self.train(env_name, backend, num_timesteps=self.num_timesteps, seed=self.seed,
-                   collision_detector=collision_detector)
+
+        num_ts = self.train_params['num_timesteps']
+        seed = self.train_params['seed']
+        stdev = self.train_params['env_dist_stdev']
+
+        viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
+
+        self.train(env_name, backend, num_timesteps=num_ts, seed=seed, viz_logdir=viz_logdir,
+                   collision_detector=collision_detector, stdev=stdev, )
