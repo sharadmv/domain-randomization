@@ -72,3 +72,9 @@ WORKDIR /root/work/domain-randomization
 RUN git pull origin master
 RUN pipenv install tensorflow
 RUN mkdir /root/.aws; echo '[default]\nregion = us-west-2' > ~/.aws/config
+
+WORKDIR /root/work/
+RUN git clone https://github.com/quanvuong/baselines.git
+
+WORKDIR /root/work/domain-randomization 
+RUN pipenv install -e ../baselines
