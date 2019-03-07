@@ -69,6 +69,6 @@ RUN mkdir -p -m 0600 ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
 
 RUN git clone https://github.com/sharadmv/domain-randomization.git
 WORKDIR /root/work/domain-randomization
-RUN git pull origin master; git checkout a425733
+RUN git pull origin master
 RUN pipenv install tensorflow
 RUN mkdir /root/.aws; echo '[default]\nregion = us-west-2' > ~/.aws/config
