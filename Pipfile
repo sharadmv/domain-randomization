@@ -25,6 +25,7 @@ boto3 = "*"
 click = "*"
 gitpython = "*"
 mpi4py = "*"
+tensorboardX = "*"
 
 [requires]
 python_version = "3.6"
