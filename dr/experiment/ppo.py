@@ -11,6 +11,8 @@ from parasol.experiment import Experiment
 
 import dr
 from datetime import datetime
+import pickle
+from path import Path
 
 
 def set_global_seeds(i):
@@ -45,7 +47,8 @@ class PPO(Experiment):
     def train(self, env_id, backend, num_timesteps, seed, viz_logdir, stdev=0.,
               collision_detector='bullet'):
         from baselines.ppo1 import mlp_policy, pposgd_simple
-        U.make_session(num_cpu=1).__enter__()
+        sess = U.make_session(num_cpu=1)
+        sess.__enter__()
         def policy_fn(name, ob_space, ac_space):
             return mlp_policy.MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
                 hid_size=64, num_hid_layers=2)
@@ -53,13 +56,15 @@ class PPO(Experiment):
         env_dist.seed(seed)
         set_global_seeds(seed)
 
-        pposgd_simple.learn(env_dist, collision_detector, policy_fn,
+        pi, eval_perfs = pposgd_simple.learn(env_dist, collision_detector, policy_fn,
                 max_timesteps=num_timesteps,
                 timesteps_per_actorbatch=2048,
                 clip_param=0.2, entcoeff=0.0,
                 optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
                 gamma=0.99, lam=0.95, schedule='linear', viz_logdir=viz_logdir
             )
+
+        return sess, eval_perfs
 
     def run_experiment(self, out_dir):
         logger.configure()
@@ -74,5 +79,15 @@ class PPO(Experiment):
 
         viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
 
-        self.train(env_name, backend, num_timesteps=num_ts, seed=seed, viz_logdir=viz_logdir,
+        sess, eval_perfs = self.train(env_name, backend, num_timesteps=num_ts, seed=seed, viz_logdir=viz_logdir,
                    collision_detector=collision_detector, stdev=stdev, )
+
+        # Save data
+        saver = tf.train.Saver()
+
+        out_dir = Path(out_dir)
+
+        saver.save(sess, out_dir / 'tf_sess.ckpt')
+
+        with open(out_dir / 'eval_perfs.pkl', 'wb') as f:
+            pickle.dump(eval_perfs, f)
