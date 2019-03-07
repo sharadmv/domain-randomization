@@ -18,6 +18,9 @@ branch = repo.active_branch.name
 @click.option('--env_dist_stdev', type=float, default=0.0)
 def main(experiment_name, env_name, backend, collision_detector,
          num_timesteps, seed, env_dist_stdev):
+
+    assert env_dist_stdev == 0.2
+
     dr.experiment.PPO(
         experiment_name,
         env_params = dict(
