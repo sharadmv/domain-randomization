@@ -19,6 +19,10 @@ branch = repo.active_branch.name
 @click.option('--mean_scale', type=float, default=1.0)
 def main(experiment_name, env_name, backend, collision_detector,
          num_timesteps, seed, env_dist_stdev, mean_scale):
+
+    assert env_dist_stdev == 1.0
+    assert mean_scale == 1.1
+
     dr.experiment.PPO(
         experiment_name,
         env_params = dict(
