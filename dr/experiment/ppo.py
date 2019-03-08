@@ -44,7 +44,7 @@ class PPO(Experiment):
             'git_hash': sha
         }
 
-    def train(self, env_id, backend, num_timesteps, seed, viz_logdir, stdev=0.,
+    def train(self, env_id, backend, num_timesteps, seed, viz_logdir, stdev=0., mean_scale=1.0,
               collision_detector='bullet'):
         from baselines.ppo1 import mlp_policy, pposgd_simple
         sess = U.make_session(num_cpu=1)
@@ -52,7 +52,7 @@ class PPO(Experiment):
         def policy_fn(name, ob_space, ac_space):
             return mlp_policy.MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
                 hid_size=64, num_hid_layers=2)
-        env_dist = dr.dist.Normal(env_id, backend, stdev=stdev)
+        env_dist = dr.dist.Normal(env_id, backend, stdev=stdev, mean_scale=mean_scale)
         env_dist.seed(seed)
         set_global_seeds(seed)
 
@@ -76,11 +76,12 @@ class PPO(Experiment):
         num_ts = self.train_params['num_timesteps']
         seed = self.train_params['seed']
         stdev = self.train_params['env_dist_stdev']
+        mean_scale = self.train_params['mean_scale']
 
         viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
 
         sess, eval_perfs = self.train(env_name, backend, num_timesteps=num_ts, seed=seed, viz_logdir=viz_logdir,
-                   collision_detector=collision_detector, stdev=stdev, )
+                   collision_detector=collision_detector, stdev=stdev, mean_scale=mean_scale)
 
         # Save data
         saver = tf.train.Saver()

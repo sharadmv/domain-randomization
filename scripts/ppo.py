@@ -16,8 +16,9 @@ branch = repo.active_branch.name
 @click.option('--num_timesteps', type=int, default=1e6)
 @click.option('--seed', type=int, default=0)
 @click.option('--env_dist_stdev', type=float, default=0.0)
+@click.option('--mean_scale', type=float, default=1.0)
 def main(experiment_name, env_name, backend, collision_detector,
-         num_timesteps, seed, env_dist_stdev):
+         num_timesteps, seed, env_dist_stdev, mean_scale):
     dr.experiment.PPO(
         experiment_name,
         env_params = dict(
@@ -28,7 +29,8 @@ def main(experiment_name, env_name, backend, collision_detector,
         train_params = dict(
             num_timesteps=num_timesteps,
             seed=seed,
-            env_dist_stdev=env_dist_stdev
+            env_dist_stdev=env_dist_stdev,
+            mean_scale=mean_scale
         )
     ).run()
 
