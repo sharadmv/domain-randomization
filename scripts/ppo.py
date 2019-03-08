@@ -21,7 +21,7 @@ def main(experiment_name, env_name, backend, collision_detector,
          num_timesteps, seed, env_dist_stdev, mean_scale):
 
     assert env_dist_stdev == 0.0
-    assert mean_scale == 0.9
+    assert mean_scale == 0.8
 
     dr.experiment.PPO(
         experiment_name,
