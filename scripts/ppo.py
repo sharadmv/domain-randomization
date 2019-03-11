@@ -20,7 +20,7 @@ branch = repo.active_branch.name
 def main(experiment_name, env_name, backend, collision_detector,
          num_timesteps, seed, env_dist_stdev, mean_scale):
 
-    assert env_dist_stdev == 0.0
+    assert env_dist_stdev == 0.5
     assert mean_scale == 1.0
     assert collision_detector == 'ode'
 
