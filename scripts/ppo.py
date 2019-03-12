@@ -23,6 +23,7 @@ def main(experiment_name, env_name, backend, collision_detector,
     assert env_dist_stdev == 0.5
     assert mean_scale == 1.0
     assert collision_detector == 'ode'
+    assert env_name == 'Walker'
 
     dr.experiment.PPO(
         experiment_name,
