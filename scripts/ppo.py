@@ -22,7 +22,7 @@ def main(experiment_name, env_name, backend, collision_detector,
 
     assert env_dist_stdev == 0.0
     assert mean_scale == 0.6
-    assert num_timesteps == 300000
+    assert num_timesteps == 200000
 
     dr.experiment.PPO(
         experiment_name,
