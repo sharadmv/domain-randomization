@@ -13,12 +13,21 @@ class EnvironmentDistribution(object, metaclass=ABCMeta):
         self.env_driver = get_driver(env_name, self.backend)
         self.root_env = self.backend.make(self.env_name)
         self.root_env.env.disableViewer = False
-        self.default_parameters = copy.deepcopy(self.env_driver.get_parameters(self.root_env))
 
-        mean_scale = kwargs.pop('mean_scale', 1.0)
+        mean_dict = kwargs.pop('mean_dict', None)
+        mean_scale = kwargs.pop('mean_scale', None)
 
-        if mean_scale != 1.0:
-            self._scale_mean(mean_scale)
+        assert (mean_scale is None and mean_dict is None) is False, 'Can only specify one options'
+
+        if mean_dict is None and mean_scale is None:
+            self.default_parameters = copy.deepcopy(self.env_driver.get_parameters(self.root_env))
+
+        elif mean_dict is not None:
+            self.default_parameters = mean_dict
+
+        elif mean_scale is not None:
+            self.default_parameters = copy.deepcopy(self.env_driver.get_parameters(self.root_env))
+            self._scale_mean_scalar(mean_scale)
 
         self._seed = None
 
@@ -35,7 +44,10 @@ class EnvironmentDistribution(object, metaclass=ABCMeta):
         self.env_driver.set_parameters(env, parameters)
         return env
 
-    def _scale_mean(self, mean_scale):
+    def _sample(self, parameters):
+        pass
+
+    def _scale_mean_scalar(self, mean_scale):
 
         assert list(self.default_parameters.keys()) == ['mass', 'damping', 'gravity'], \
             'Not all parameters are being scaled'
@@ -43,10 +55,6 @@ class EnvironmentDistribution(object, metaclass=ABCMeta):
         self.default_parameters['mass'] *= mean_scale
         self.default_parameters['damping'] *= mean_scale
         self.default_parameters['gravity'] *= mean_scale
-
-    @abstractmethod
-    def _sample(self, parameters):
-        pass
 
     def seed(self, seed):
         np.random.seed(seed)
