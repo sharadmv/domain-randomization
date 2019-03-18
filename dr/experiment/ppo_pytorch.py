@@ -35,7 +35,7 @@ class PPO_Pytorch(object):
 
     def train(self, env_id, backend,
               train_params, env_params,
-              seed, viz_logdir,
+              viz_logdir,
               stdev=0., mean_scale=1.0, collision_detector='bullet'):
 
         # Unpack params
@@ -43,6 +43,7 @@ class PPO_Pytorch(object):
         pol_init_std = train_params['pol_init_std']
         adam_epsilon = train_params['adam_epsilon']
         optim_stepsize = train_params['optim_stepsize']
+        seed = train_params['seed']
 
         # Make env
         env_dist = dr.dist.Normal(env_id, backend, stdev=stdev, mean_scale=mean_scale)
@@ -85,16 +86,14 @@ class PPO_Pytorch(object):
             print()
 
     def run(self):
+        set_global_seeds(self.train_params['seed'])
 
         env_name = self.env_params['env_name']
         backend = self.env_params['backend']
         collision_detector = self.env_params['collision_detector']
 
-        seed = self.train_params['seed']
         stdev = self.train_params['env_dist_stdev']
         mean_scale = self.train_params['mean_scale']
-
-        set_global_seeds(seed)
 
         viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
 
@@ -102,6 +101,5 @@ class PPO_Pytorch(object):
             env_id=env_name,
             backend=backend,
             train_params=self.train_params, env_params=self.env_params,
-            seed=seed,
             viz_logdir=viz_logdir,
         )
