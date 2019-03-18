@@ -58,7 +58,22 @@ def make_mujoco_env(env_id, seed):
     return env
 
 
-def traj_seg_gen(env, pol, val, state_running_m_std, train_params):
+def traj_seg_gen(env_dist, pol, val, state_running_m_std,
+                 env_params, train_params):
+    '''
+    It is tricky to set the seed of the sampled env in this function.
+    We would like to set the seed of the sampled env to be able to reproduce result exactly.
+    However, if the seed is the same for all sampled envs, then when the stddev of env_dist is set to 0,
+    then we would always sample the same initial state for all episodes.
+    Thus, we set seed of the env sampled before training to be 0 and
+    set the seed to be t every time we sample a new environment, where t is the number of training timestep so far.
+    This ensures that we can set seed for reproducibility without
+    having degenerate behavior in the corner case of stddev==0.0
+    '''
+
+    env = env_dist.sample()
+    env_dist.backend.set_collision_detector(env, env_params['collision_detector'])
+    env.seed(train_params['seed'])
 
     t = 0
     ac = env.action_space.sample()  # not used, just so we have the datatype
@@ -113,6 +128,12 @@ def traj_seg_gen(env, pol, val, state_running_m_std, train_params):
             ep_lens.append(cur_ep_len)
             cur_ep_ret = 0
             cur_ep_len = 0
+
+            env.close()
+            env = env_dist.sample()
+            env_dist.backend.set_collision_detector(env, env_params['collision_detector'])
+            env.seed(t)
+
             ob = env.reset()
         t += 1
 

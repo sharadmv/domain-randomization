@@ -34,7 +34,7 @@ class PPO_Pytorch(object):
         super().__init__()
 
     def train(self, env_id, backend,
-              train_params,
+              train_params, env_params,
               seed, viz_logdir,
               stdev=0., mean_scale=1.0, collision_detector='bullet'):
 
@@ -73,7 +73,7 @@ class PPO_Pytorch(object):
         state_running_m_std = RunningMeanStd(shape=env.observation_space.shape)
 
         # seg_gen is a generator that yields the training data points
-        seg_gen = traj_seg_gen(env, pol, val, state_running_m_std, train_params)
+        seg_gen = traj_seg_gen(env_dist, pol, val, state_running_m_std, env_params, train_params)
 
         eval_perfs = []
 
@@ -101,7 +101,7 @@ class PPO_Pytorch(object):
         self.train(
             env_id=env_name,
             backend=backend,
-            train_params=self.train_params,
+            train_params=self.train_params, env_params=self.env_params,
             seed=seed,
             viz_logdir=viz_logdir,
         )
