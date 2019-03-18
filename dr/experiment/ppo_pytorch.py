@@ -44,9 +44,14 @@ class PPO_Pytorch(object):
         adam_epsilon = train_params['adam_epsilon']
         optim_stepsize = train_params['optim_stepsize']
 
+        # Make env
         env_dist = dr.dist.Normal(env_id, backend, stdev=stdev, mean_scale=mean_scale)
+        env_dist.backend.set_collision_detector(env_dist.root_env, collision_detector)
         env_dist.seed(seed)
         env = env_dist.root_env
+
+        eval_envs = [env_dist.backend.make(env_dist.env_name) for _ in range(100)]
+        [env_dist.backend.set_collision_detector(e, collision_detector) for e in eval_envs]
 
         set_torch_num_threads()
 
@@ -70,11 +75,13 @@ class PPO_Pytorch(object):
         # seg_gen is a generator that yields the training data points
         seg_gen = traj_seg_gen(env, pol, val, state_running_m_std, train_params)
 
+        eval_perfs = []
+
         for iter_i in trange(num_train_iter):
             print('\nStarting training iter', iter_i)
             one_train_iter(pol, val, optims,
                            iter_i, eps_rets_buff, eps_rets_mean_buff, seg_gen,
-                           state_running_m_std, train_params)
+                           state_running_m_std, train_params, eval_envs, eval_perfs)
             print()
 
     def run(self):

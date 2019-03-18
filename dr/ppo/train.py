@@ -36,6 +36,33 @@ def update_params(m_b, pol, val, optims, clip_param):
     optims['val_optim'].step()
 
 
+@torch.no_grad()
+def evaluate_policy(pol, eval_envs):
+
+    num_envs = len(eval_envs)
+
+    for i, env in enumerate(eval_envs):
+        env.seed(i)
+
+    done = np.array([False] * num_envs)
+    avg_reward = np.array([0.] * num_envs)
+
+    obs = np.stack([env.reset() for env in eval_envs])
+
+    while not all(done):
+        t_obs = torch.from_numpy(obs).float()
+        _, mean_acs = pol(t_obs)
+        for i, (env, action) in enumerate(zip(eval_envs, mean_acs)):
+            if not done[i]:
+                obs[i], r, d, _ = env.step(action)
+                avg_reward[i] += r
+                done[i] = d
+
+    avg_reward = np.mean(avg_reward)
+
+    return avg_reward
+
+
 def add_vtarg_and_adv(seg, lam, gamma):
     """
     Compute target value using TD(lambda) estimator, and advantage with GAE(lambda)
@@ -56,7 +83,8 @@ def add_vtarg_and_adv(seg, lam, gamma):
 
 def one_train_iter(pol, val, optims,
                    iter_i, eps_rets_buff, eps_rets_mean_buff, seg_gen,
-                   state_running_m_std, train_params):
+                   state_running_m_std, train_params, eval_envs, eval_perfs,
+                   eval_freq=5):
 
     # Extract params
     ts_per_batch = train_params['ts_per_batch']
@@ -97,3 +125,7 @@ def one_train_iter(pol, val, optims,
         for m_b in batch.iterate_once(optim_batch_size):
             update_params(m_b, pol, val, optims, clip_param)
 
+    if iter_i % eval_freq == 0:
+        eval_pref = evaluate_policy(pol, eval_envs)
+
+        eval_perfs.append(eval_pref)
