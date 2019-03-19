@@ -4,6 +4,8 @@ import dr
 from git import Repo
 from datetime import datetime
 import os.path as osp
+from mpi4py import MPI
+COMM = MPI.COMM_WORLD
 
 repo = Repo('./')
 branch = repo.active_branch.name
@@ -17,11 +19,26 @@ branch = repo.active_branch.name
 @click.option('--seed', type=int, default=0)
 @click.option('--env_dist_stdev', type=float, default=0.0)
 @click.option('--mean_scale', type=float, default=1.0)
-def main(experiment_name, env_name, backend, collision_detector,
-         num_timesteps, seed, env_dist_stdev, mean_scale):
 
-    assert env_dist_stdev == 0.0
+@click.option('--pop_size', type=int, default=30)
+@click.option('--num_elites', type=int, default=10)
+@click.option('--debug', type=bool, default=False)
+@click.option('--num_eval_env', type=int, default=100)
+def main(experiment_name, env_name, backend, collision_detector,
+         num_timesteps, seed, env_dist_stdev, mean_scale,
+         pop_size, num_elites,
+         debug, num_eval_env):
+
+    assert env_dist_stdev == 1.0
     assert mean_scale == 1.0
+
+    if debug:
+        pop_size = 3
+        num_elites = 2
+        num_timesteps = 20000
+        num_eval_env = 10
+
+    assert pop_size == COMM.Get_size()
 
     dr.experiment.PPO_Pytorch(
         experiment_name,
@@ -47,8 +64,12 @@ def main(experiment_name, env_name, backend, collision_detector,
             gamma = 0.99,
             optim_epoch = 10,
             optim_batch_size = 64,
-            clip_param = 0.2
+            clip_param = 0.2,
 
+            # CEM parameters
+            pop_size = pop_size,
+            num_elites = num_elites,
+            num_eval_env = num_eval_env
         )
     ).run()
 

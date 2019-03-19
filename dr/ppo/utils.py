@@ -71,7 +71,7 @@ def traj_seg_gen(env_dist, pol, val, state_running_m_std,
     having degenerate behavior in the corner case of stddev==0.0
     '''
 
-    env = env_dist.sample()
+    env = env_dist.sample(mode='dict')
     env_dist.backend.set_collision_detector(env, env_params['collision_detector'])
     env.seed(train_params['seed'])
 
@@ -130,7 +130,7 @@ def traj_seg_gen(env_dist, pol, val, state_running_m_std,
             cur_ep_len = 0
 
             env.close()
-            env = env_dist.sample()
+            env = env_dist.sample(mode='dict')
             env_dist.backend.set_collision_detector(env, env_params['collision_detector'])
             env.seed(t)
 

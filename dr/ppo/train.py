@@ -45,7 +45,7 @@ def evaluate_policy(pol, eval_envs):
         env.seed(i)
 
     done = np.array([False] * num_envs)
-    avg_reward = np.array([0.] * num_envs)
+    avg_reward = np.array([0.] * num_envs, dtype=np.float32)
 
     obs = np.stack([env.reset() for env in eval_envs])
 
@@ -111,7 +111,6 @@ def one_train_iter(pol, val, optims,
 
     eps_rets_buff.extend(seg['ep_rets'])
     eps_rets_mean_buff.append((num_ts_so_far, np.mean(eps_rets_buff)))
-    print('Last 100 episodes mean returns:', np.mean(eps_rets_buff))
 
     add_vtarg_and_adv(seg, lam, gamma)
 
