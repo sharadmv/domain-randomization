@@ -206,6 +206,7 @@ class PPO_Pytorch(object):
                 COMM.send(r, dest=0)
 
     def _cost_function(self, samples, cem_timestep):
+        print(f'cem_timestep: {cem_timestep}')
 
         env_name = self.env_params['env_name']
         backend = self.env_params['backend']
@@ -247,6 +248,7 @@ class PPO_Pytorch(object):
         # Obtain the "costs" that the CEM cost function should return
         costs = [- max(i[1]) for i in reses]
         print(costs)
+        print()
 
         return costs
 
