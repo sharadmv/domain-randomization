@@ -198,7 +198,8 @@ class PPO_Pytorch(object):
                 num_elites=self.train_params['num_elites'],
                 cost_function=self._cost_function,
                 lower_bound=0.0,
-                upper_bound=cem_init_mean * 5.0
+                upper_bound=cem_init_mean * 5.0,
+                alpha=0.75,
             )
 
             self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
