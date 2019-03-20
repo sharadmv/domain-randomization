@@ -1,5 +1,5 @@
-from dr.envs.hopper import Hopper
 from dr.envs.cheetah import Cheetah
+from dr.envs.hopper import Hopper
 from dr.envs.walker import Walker
 
 __all__ = ['get_driver']
@@ -9,6 +9,7 @@ DRIVERS = {
     'Cheetah': Cheetah,
     'Walker': Walker,
 }
+
 
 def get_driver(env_name, backend):
     if env_name not in DRIVERS:

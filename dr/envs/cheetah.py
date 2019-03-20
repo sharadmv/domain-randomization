@@ -2,6 +2,7 @@ import numpy as np
 
 from dr.envs.driver import Driver
 
+
 class Cheetah(Driver):
 
     def get_parameters(self, env):
@@ -10,7 +11,8 @@ class Cheetah(Driver):
             'damping': self.backend.get_damping_coefficients(env),
             'gravity': self.backend.get_gravity(env),
         }
-        return np.concatenate([self.backend.get_masses(env)[:], self.backend.get_damping_coefficients(env), [self.backend.get_gravity(env)]])
+        return np.concatenate([self.backend.get_masses(env)[:], self.backend.get_damping_coefficients(env),
+                               [self.backend.get_gravity(env)]])
 
     def set_parameters(self, env, parameters):
         masses = parameters['mass']

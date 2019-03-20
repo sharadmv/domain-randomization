@@ -12,8 +12,8 @@ REVERSE_COLLISION_DETECTORS = {
     v: k for k, v in COLLISION_DETECTORS.items()
 }
 
-class DartBackend(Backend):
 
+class DartBackend(Backend):
     ENV_MAP = {
         'Hopper': 'DartHopper-v1',
         'Cheetah': 'DartHalfCheetah-v1',

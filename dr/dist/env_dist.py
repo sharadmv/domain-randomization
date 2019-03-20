@@ -1,9 +1,11 @@
-import numpy as np
+import copy
 from abc import abstractmethod, ABCMeta
+
+import numpy as np
 
 from dr.backend import get_backend
 from dr.envs import get_driver
-import copy
+
 
 class EnvironmentDistribution(object, metaclass=ABCMeta):
 

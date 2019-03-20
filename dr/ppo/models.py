@@ -1,9 +1,8 @@
-from dr.ppo.utils import weights_init
-
+import numpy as np
 import torch
 import torch.nn as nn
 
-import numpy as np
+from dr.ppo.utils import weights_init
 
 
 class Policy(nn.Module):
@@ -39,7 +38,7 @@ class Policy(nn.Module):
 
         ac_size = acs.size()[-1]
 
-        return 0.5 * torch.sum(((acs - mean) / self.std)**2, dim=-1, keepdim=True) + \
+        return 0.5 * torch.sum(((acs - mean) / self.std) ** 2, dim=-1, keepdim=True) + \
                0.5 * np.log(2.0 * np.pi) * float(ac_size) + \
                torch.sum(torch.log(self.std), dim=-1)
 
@@ -53,7 +52,6 @@ class Policy(nn.Module):
 class ValueNet(nn.Module):
 
     def __init__(self, ob_space, hid_size):
-
         super().__init__()
 
         self.l_in = nn.Linear(ob_space.shape[0], hid_size)
@@ -64,7 +62,6 @@ class ValueNet(nn.Module):
             weights_init(c, 1.0)
 
     def forward(self, x):
-
         x = torch.tanh(self.l_in(x))
         x = torch.tanh(self.l1(x))
         x = self.l_out(x)

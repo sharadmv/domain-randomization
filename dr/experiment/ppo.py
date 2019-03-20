@@ -1,11 +1,11 @@
-import git
 import random
 
-import tensorflow as tf
+import git
 import numpy as np
-from baselines.common.cmd_util import common_arg_parser
-from baselines.common import tf_util as U
+import tensorflow as tf
 from baselines import logger
+from baselines.common import tf_util as U
+
 gfile = tf.gfile
 from parasol.experiment import Experiment
 
@@ -49,20 +49,22 @@ class PPO(Experiment):
         from baselines.ppo1 import mlp_policy, pposgd_simple
         sess = U.make_session(num_cpu=1)
         sess.__enter__()
+
         def policy_fn(name, ob_space, ac_space):
             return mlp_policy.MlpPolicy(name=name, ob_space=ob_space, ac_space=ac_space,
-                hid_size=64, num_hid_layers=2)
+                                        hid_size=64, num_hid_layers=2)
+
         env_dist = dr.dist.Normal(env_id, backend, stdev=stdev, mean_scale=mean_scale)
         env_dist.seed(seed)
         set_global_seeds(seed)
 
         pi, eval_perfs = pposgd_simple.learn(env_dist, collision_detector, policy_fn,
-                max_timesteps=num_timesteps,
-                timesteps_per_actorbatch=2048,
-                clip_param=0.2, entcoeff=0.0,
-                optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
-                gamma=0.99, lam=0.95, schedule='linear', viz_logdir=viz_logdir
-            )
+                                             max_timesteps=num_timesteps,
+                                             timesteps_per_actorbatch=2048,
+                                             clip_param=0.2, entcoeff=0.0,
+                                             optim_epochs=10, optim_stepsize=3e-4, optim_batchsize=64,
+                                             gamma=0.99, lam=0.95, schedule='linear', viz_logdir=viz_logdir
+                                             )
 
         return sess, eval_perfs
 
@@ -81,7 +83,7 @@ class PPO(Experiment):
         viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
 
         sess, eval_perfs = self.train(env_name, backend, num_timesteps=num_ts, seed=seed, viz_logdir=viz_logdir,
-                   collision_detector=collision_detector, stdev=stdev, mean_scale=mean_scale)
+                                      collision_detector=collision_detector, stdev=stdev, mean_scale=mean_scale)
 
         # Save data
         saver = tf.train.Saver()

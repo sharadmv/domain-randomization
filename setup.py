@@ -1,5 +1,5 @@
-import os
 from setuptools import setup, find_packages
+
 setup(
     name='dr',  # Required
     version='0.0.0',  # Required

@@ -1,15 +1,13 @@
 import argparse
 import os
-
-import torch
-import numpy as np
 import random
 
 import gym
+import numpy as np
+import torch
 
 
 def set_global_seeds(seed):
-
     torch.manual_seed(seed)
     np.random.seed(seed)
     random.seed(seed)
@@ -19,7 +17,6 @@ def set_global_seeds(seed):
 
 
 def set_torch_num_threads():
-
     try:
         nt = int(os.environ['OMP_NUM_THREADS'])
         torch.set_num_threads(nt)
@@ -139,7 +136,6 @@ def traj_seg_gen(env_dist, pol, val, state_running_m_std,
 
 
 def weights_init(c, std):
-
     out = np.random.randn(c.out_features, c.in_features).astype(np.float32)
     out *= std / np.sqrt(np.square(out).sum(axis=0, keepdims=True))
 
@@ -177,7 +173,7 @@ class Dataset(object):
 
         data_map = dict()
         for key in self.data_map:
-            data_map[key] = self.data_map[key][cur_id:cur_id+cur_batch_size]
+            data_map[key] = self.data_map[key][cur_id:cur_id + cur_batch_size]
         return data_map
 
     def iterate_once(self, batch_size):

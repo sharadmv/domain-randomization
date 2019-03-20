@@ -1,12 +1,11 @@
-from dr.ppo.utils import Dataset, change_lr
-
+import numpy as np
 import torch
 import torch.nn.functional as F
-import numpy as np
+
+from dr.ppo.utils import Dataset, change_lr
 
 
 def update_params(m_b, pol, val, optims, clip_param):
-
     keys = ('obs', 'acs', 'vtargs', 'atargs', 'pold')
     obs, acs, vtargs, atargs, pold = (torch.from_numpy(m_b[i]).float() for i in keys)
 
@@ -38,7 +37,6 @@ def update_params(m_b, pol, val, optims, clip_param):
 
 @torch.no_grad()
 def evaluate_policy(pol, eval_envs):
-
     num_envs = len(eval_envs)
 
     for i, env in enumerate(eval_envs):
@@ -68,15 +66,16 @@ def add_vtarg_and_adv(seg, lam, gamma):
     Compute target value using TD(lambda) estimator, and advantage with GAE(lambda)
     """
 
-    news = np.append(seg["news"], 0) # last element is only used for last vtarg, but we already zeroed it if last new = 1
+    news = np.append(seg["news"],
+                     0)  # last element is only used for last vtarg, but we already zeroed it if last new = 1
     vpreds = np.append(seg["vpreds"], seg["nextvpred"])
     T = len(seg["rews"])
     seg["advs"] = gaelam = np.empty(T, 'float32')
     rews = seg["rews"]
     lastgaelam = 0
     for t in reversed(range(T)):
-        nonterminal = 1-news[t+1]
-        delta = rews[t] + gamma * vpreds[t+1] * nonterminal - vpreds[t]
+        nonterminal = 1 - news[t + 1]
+        delta = rews[t] + gamma * vpreds[t + 1] * nonterminal - vpreds[t]
         gaelam[t] = lastgaelam = delta + gamma * lam * nonterminal * lastgaelam
     seg["tdlamrets"] = seg["advs"] + seg["vpreds"]
 
@@ -85,7 +84,6 @@ def one_train_iter(pol, val, optims,
                    iter_i, eps_rets_buff, eps_rets_mean_buff, seg_gen,
                    state_running_m_std, train_params, eval_envs, eval_perfs,
                    eval_freq=5):
-
     # Extract params
     ts_per_batch = train_params['ts_per_batch']
     num_timesteps = train_params['num_timesteps']

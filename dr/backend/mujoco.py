@@ -2,8 +2,8 @@ import numpy as np
 
 from dr.backend.base import Backend
 
-class MujocoBackend(Backend):
 
+class MujocoBackend(Backend):
     ENV_MAP = {
         'Hopper': 'Hopper-v2',
         'Cheetah': 'HalfCheetah-v2',

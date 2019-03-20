@@ -1,22 +1,19 @@
 import random
+from collections import deque
+from datetime import datetime
 
+import gym
 import numpy as np
+import scipy.stats as stats
+import torch
+import torch.optim as optim
+from mpi4py import MPI
 
 import dr
-from datetime import datetime
-import pickle
-from path import Path
-import torch
-import torch.multiprocessing as mp
-import scipy.stats as stats
-import gym
-
-from dr.ppo.utils import set_torch_num_threads, RunningMeanStd, traj_seg_gen
-from dr.ppo.train import one_train_iter
 from dr.ppo.models import Policy, ValueNet
-import torch.optim as optim
-from collections import deque
-from mpi4py import MPI
+from dr.ppo.train import one_train_iter
+from dr.ppo.utils import set_torch_num_threads, RunningMeanStd, traj_seg_gen
+
 COMM = MPI.COMM_WORLD
 import tensorboardX
 
@@ -222,8 +219,8 @@ class PPO_Pytorch(object):
 
         argss = [(env_name, backend,
                   self.train_params, self.env_params,
-                  samples[rank][:len(samples[rank])//2],
-                  samples[rank][len(samples[rank])//2:]) for rank in range(len(samples))]
+                  samples[rank][:len(samples[rank]) // 2],
+                  samples[rank][len(samples[rank]) // 2:]) for rank in range(len(samples))]
 
         # Send args to other MPI processes
         for rank in range(1, COMM.size):
@@ -232,7 +229,7 @@ class PPO_Pytorch(object):
         # Obtain results for all args
         r = self.train(*argss[0])
 
-        reses = [(0, r)] # 0 is the rank of this process
+        reses = [(0, r)]  # 0 is the rank of this process
 
         # Receive results from the other processes:
         for rank in range(1, COMM.size):
@@ -245,7 +242,7 @@ class PPO_Pytorch(object):
         # Get the index of the highest performing model in population
         # and write result to tensorboard
         max_idx = 0
-        max_perf = max(reses[0][1]) # 0 is the result of process rank 0. 1 brings us the eval perf list
+        max_perf = max(reses[0][1])  # 0 is the result of process rank 0. 1 brings us the eval perf list
 
         for i, item in enumerate(reses):
             perf = max(item[1])
@@ -267,9 +264,9 @@ class PPO_Pytorch(object):
         assert env_id == 'Hopper', 'Only support Hopper for now'
 
         return np.concatenate((
-             d['mass'],
-             d['damping'],
-             [d['gravity']]
+            d['mass'],
+            d['damping'],
+            [d['gravity']]
         )).flatten().copy()
 
     @classmethod

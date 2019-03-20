@@ -1,5 +1,7 @@
-import gym
 from abc import abstractmethod, ABCMeta
+
+import gym
+
 
 class Backend(object, metaclass=ABCMeta):
 
