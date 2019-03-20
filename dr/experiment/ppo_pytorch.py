@@ -92,6 +92,8 @@ class CEMOptimizer(object):
             for i, m in enumerate(var):
                 self.writer.add_scalar(f'var/{i}', m, t)
 
+            self.writer.add_scalar('costs', np.min(costs), t)
+
             t += 1
 
         return mean
