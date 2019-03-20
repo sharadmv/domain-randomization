@@ -9,6 +9,7 @@ from path import Path
 import torch
 import torch.multiprocessing as mp
 import scipy.stats as stats
+import gym
 
 from dr.ppo.utils import set_torch_num_threads, RunningMeanStd, traj_seg_gen
 from dr.ppo.train import one_train_iter
@@ -190,8 +191,7 @@ class PPO_Pytorch(object):
         self.env_dist.backend.set_collision_detector(env_dist.root_env, collision_detector)
         self.env_dist.seed(seed)
 
-        self.eval_envs = [env_dist.backend.make(env_dist.env_name) for _ in range(num_eval_env)]
-        [env_dist.backend.set_collision_detector(e, collision_detector) for e in self.eval_envs]
+        self.eval_envs = [gym.make('Hopper-v2') for _ in range(num_eval_env)]
 
         if COMM.Get_rank() == 0:
             self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
