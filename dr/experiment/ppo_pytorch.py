@@ -18,6 +18,7 @@ import torch.optim as optim
 from collections import deque
 from mpi4py import MPI
 COMM = MPI.COMM_WORLD
+import tensorboardX
 
 
 def set_global_seeds(i):
@@ -54,6 +55,7 @@ class CEMOptimizer(object):
         self.epsilon, self.alpha = epsilon, alpha
 
         self.cost_function = cost_function
+        self.writer = tensorboardX.SummaryWriter()
 
         if num_elites > popsize:
             raise ValueError("Number of elites must be at most the population size.")
@@ -87,6 +89,12 @@ class CEMOptimizer(object):
             mean = self.alpha * mean + (1 - self.alpha) * new_mean
             var = self.alpha * var + (1 - self.alpha) * new_var
 
+            for i, m in enumerate(mean):
+                self.writer.add_scalar(f'mean/{i}', m, t)
+
+            for i, m in enumerate(var):
+                self.writer.add_scalar(f'var/{i}', m, t)
+
             t += 1
 
         return mean
@@ -98,14 +106,6 @@ class PPO_Pytorch(object):
         self.experiment_name = experiment_name
         self.env_params = env_params
         self.train_params = train_params
-        self.optimizer = CEMOptimizer(
-            sol_dim=18,
-            max_iters=300,
-            popsize=train_params['pop_size'],
-            num_elites=train_params['num_elites'],
-            cost_function=self._cost_function,
-            lower_bound=0.0,
-        )
 
         super().__init__()
 
@@ -181,9 +181,6 @@ class PPO_Pytorch(object):
         cem_init_mean = np.concatenate((init_mean_param, init_stdev_param))
         cem_init_stdev = np.array([1.0] * len(cem_init_mean), dtype=np.float32)
 
-        # initialize upper bound for cem optimizer
-        self.optimizer.ub = cem_init_mean * 5.0
-
         viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
 
         # Make envs that will be reused for training and eval
@@ -194,6 +191,16 @@ class PPO_Pytorch(object):
         self.eval_envs = [gym.make('Hopper-v2') for _ in range(num_eval_env)]
 
         if COMM.Get_rank() == 0:
+            self.optimizer = CEMOptimizer(
+                sol_dim=18,
+                max_iters=300,
+                popsize=self.train_params['pop_size'],
+                num_elites=self.train_params['num_elites'],
+                cost_function=self._cost_function,
+                lower_bound=0.0,
+                upper_bound=cem_init_mean * 5.0
+            )
+
             self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
 
             COMM.Abort(0)
