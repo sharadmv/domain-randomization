@@ -248,6 +248,7 @@ class PPO_Pytorch(object):
         # Obtain the "costs" that the CEM cost function should return
         costs = [- max(i[1]) for i in reses]
         print(costs)
+        print(min(costs))
         print()
 
         return costs
