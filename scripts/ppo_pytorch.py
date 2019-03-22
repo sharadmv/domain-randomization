@@ -15,7 +15,7 @@ branch = repo.active_branch.name
 
 @click.command()
 @click.option('--experiment_name', type=str, default=osp.join(branch, datetime.now().strftime('%b%d_%H-%M-%S')))
-@click.option('--env_name', type=str, default='Hopper')
+@click.option('--env_name', type=str, default='Walker')
 @click.option('--backend', type=str, default='dart')
 @click.option('--collision_detector', type=str, default='bullet')
 @click.option('--num_timesteps', type=int, default=30000)
@@ -32,6 +32,7 @@ def main(experiment_name, env_name, backend, collision_detector,
          debug, num_eval_env):
     assert env_dist_stdev == 1.0
     assert mean_scale == 1.0
+    assert env_name == 'Walker'
 
     if debug:
         pop_size = 3

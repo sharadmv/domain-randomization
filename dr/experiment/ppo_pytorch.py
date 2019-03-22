@@ -215,11 +215,11 @@ class PPO_Pytorch(object):
         self.env_dist.backend.set_collision_detector(env_dist.root_env, collision_detector)
         self.env_dist.seed(seed)
 
-        self.eval_envs = [gym.make('Hopper-v2') for _ in range(num_eval_env)]
+        self.eval_envs = [gym.make('Walker2d-v2') for _ in range(num_eval_env)]
 
         if COMM.Get_rank() == 0:
             self.optimizer = CEMOptimizer(
-                sol_dim=18,
+                sol_dim=30,
                 max_iters=300,
                 popsize=self.train_params['pop_size'],
                 num_elites=self.train_params['num_elites'],
@@ -304,7 +304,7 @@ class PPO_Pytorch(object):
     @classmethod
     def _dict_to_vec(cls, env_id, d):
 
-        assert env_id == 'Hopper', 'Only support Hopper for now'
+        assert env_id == 'Walker', 'Only support Walker for in this branch'
 
         return np.concatenate((
             d['mass'],
@@ -315,14 +315,14 @@ class PPO_Pytorch(object):
     @classmethod
     def _vec_to_dict(cls, env_id, means, stdevs):
 
-        assert env_id == 'Hopper', 'Only support Hopper for now'
+        assert env_id == 'Walker', 'Only support Walker for in this branch'
 
         return dict(
-            mass=means[:4],
-            damping=means[4:-1],
+            mass=means[:7],
+            damping=means[7:-1],
             gravity=means[-1]
         ), dict(
-            mass=stdevs[:4],
-            damping=stdevs[4:-1],
+            mass=stdevs[:7],
+            damping=stdevs[7:-1],
             gravity=stdevs[-1]
         )
