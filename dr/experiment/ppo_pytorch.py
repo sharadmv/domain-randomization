@@ -229,6 +229,8 @@ class PPO_Pytorch(object):
                 viz_dir=self.log_dir
             )
 
+            # This is buggy
+            # https://github.com/lanpa/tensorboardX/issues/345
             self.optimizer.writer.add_text('env_params', str(self.env_params), 0)
             self.optimizer.writer.add_text('train_params', str(self.train_params), 0)
 
