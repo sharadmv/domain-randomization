@@ -197,6 +197,8 @@ class PPO_Pytorch(object):
                 num_elites=self.train_params['num_elites'],
                 cost_function=self._cost_function,
                 lower_bound=0.0,
+                #TODO: setting the upper bound this way, means that
+                # if the initial dimension value is 0, then the upper bound is 0
                 upper_bound=cem_init_mean * 5.0,
                 alpha=0.75,
             )
