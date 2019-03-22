@@ -9,6 +9,8 @@ import torch
 import torch.optim as optim
 from mpi4py import MPI
 
+import os.path as osp
+import pickle
 import dr
 from dr.ppo.models import Policy, ValueNet
 from dr.ppo.train import one_train_iter
@@ -69,6 +71,10 @@ class CEMOptimizer(object):
         mean, var, t = init_mean, init_var, 0
         X = stats.truncnorm(-2, 2, loc=np.zeros_like(mean), scale=np.ones_like(var))
 
+        costs_hist = []
+        mean_hist = []
+        var_hist = []
+
         while (t < self.max_iters) and np.max(var) > self.epsilon:
             lb_dist, ub_dist = mean - self.lb, self.ub - mean
             constrained_var = np.minimum(np.minimum(np.square(lb_dist / 2), np.square(ub_dist / 2)), var)
@@ -96,7 +102,13 @@ class CEMOptimizer(object):
 
             t += 1
 
-        return mean
+            costs_hist.append(costs)
+            mean_hist.append(mean)
+            var_hist.append(var)
+
+        return dict(
+            mean_hist=mean_hist, costs_hist=costs_hist, var_hist=var_hist
+        )
 
 
 class PPO_Pytorch(object):
@@ -105,6 +117,8 @@ class PPO_Pytorch(object):
         self.experiment_name = experiment_name
         self.env_params = env_params
         self.train_params = train_params
+        self.log_dir = osp.join('runs',
+                                str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S'))
 
         super().__init__()
 
@@ -180,8 +194,6 @@ class PPO_Pytorch(object):
         cem_init_mean = np.concatenate((init_mean_param, init_stdev_param))
         cem_init_stdev = np.array([1.0] * len(cem_init_mean), dtype=np.float32)
 
-        viz_logdir = 'runs/' + str(self.env_params) + str(self.train_params) + datetime.now().strftime('%b%d_%H-%M-%S')
-
         # Make envs that will be reused for training and eval
         self.env_dist = dr.dist.Normal(env_name, backend)
         self.env_dist.backend.set_collision_detector(env_dist.root_env, collision_detector)
@@ -203,7 +215,12 @@ class PPO_Pytorch(object):
                 alpha=0.75,
             )
 
-            self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
+            res = self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
+
+            path = osp.join(self.log_dir, 'res.pkl')
+
+            with open(path, 'wb') as f:
+                pickle.dump(res, f)
 
             COMM.Abort(0)
         else:
