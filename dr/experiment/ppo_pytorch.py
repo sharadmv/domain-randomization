@@ -226,6 +226,9 @@ class PPO_Pytorch(object):
                 viz_dir=self.log_dir
             )
 
+            self.optimizer.writer.add_text('env_params', str(self.env_params), 0)
+            self.optimizer.writer.add_text('train_params', str(self.train_params), 0)
+
             res = self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
 
             path = osp.join(self.log_dir, 'res.pkl')
