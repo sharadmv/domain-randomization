@@ -32,7 +32,7 @@ def set_global_seeds(i):
 class CEMOptimizer(object):
 
     def __init__(self, sol_dim, max_iters, popsize, num_elites, cost_function,
-                 upper_bound=None, lower_bound=None, epsilon=0.001, alpha=0.25):
+                 upper_bound=None, lower_bound=None, epsilon=0.001, alpha=0.25, viz_dir=None):
         """Creates an instance of this class.
         Arguments:
             sol_dim (int): The dimensionality of the problem space
@@ -54,7 +54,11 @@ class CEMOptimizer(object):
         self.epsilon, self.alpha = epsilon, alpha
 
         self.cost_function = cost_function
-        self.writer = tensorboardX.SummaryWriter()
+
+        if viz_dir is not None:
+            self.writer = tensorboardX.SummaryWriter(viz_dir)
+        else:
+            self.writer = tensorboardX.SummaryWriter()
 
         if num_elites > popsize:
             raise ValueError("Number of elites must be at most the population size.")
@@ -213,6 +217,7 @@ class PPO_Pytorch(object):
                 # if the initial dimension value is 0, then the upper bound is 0
                 upper_bound=cem_init_mean * 5.0,
                 alpha=0.75,
+                viz_dir=self.log_dir
             )
 
             res = self.optimizer.obtain_solution(cem_init_mean, cem_init_stdev)
