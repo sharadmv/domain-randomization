@@ -125,7 +125,8 @@ class PPO_Pytorch(object):
         self.env_params = env_params
         self.train_params = train_params
 
-        self.log_dir = osp.join('runs', datetime.now().strftime('%b%d_%H-%M-%S'))
+        self.log_dir = osp.join('runs',
+                                f'seed_{str(train_params["seed"])}_{datetime.now().strftime("%b%d_%H-%M-%S")}')
 
         os.makedirs(self.log_dir, exist_ok=True)
 
