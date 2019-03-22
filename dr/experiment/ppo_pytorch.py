@@ -9,6 +9,7 @@ import torch
 import torch.optim as optim
 from mpi4py import MPI
 
+import os
 import os.path as osp
 import pickle
 import dr
@@ -123,6 +124,8 @@ class PPO_Pytorch(object):
         self.train_params = train_params
 
         self.log_dir = osp.join('runs', datetime.now().strftime('%b%d_%H-%M-%S'))
+
+        os.makedirs(self.log_dir, exist_ok=True)
 
         with open(osp.join(self.log_dir, 'env_params.pkl'), 'wb+') as f:
             pickle.dump(env_params, f)
