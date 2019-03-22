@@ -111,6 +111,8 @@ class CEMOptimizer(object):
             mean_hist.append(mean)
             var_hist.append(var)
 
+        self.writer.close()
+
         return dict(
             mean_hist=mean_hist, costs_hist=costs_hist, var_hist=var_hist
         )
