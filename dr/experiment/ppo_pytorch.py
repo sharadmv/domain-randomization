@@ -124,10 +124,10 @@ class PPO_Pytorch(object):
 
         self.log_dir = osp.join('runs', datetime.now().strftime('%b%d_%H-%M-%S'))
 
-        with open(osp.join(self.log_dir, 'env_params.pkl'), 'wb') as f:
+        with open(osp.join(self.log_dir, 'env_params.pkl'), 'wb+') as f:
             pickle.dump(env_params, f)
 
-        with open(osp.join(self.log_dir, 'train_params.pkl'), 'wb') as f:
+        with open(osp.join(self.log_dir, 'train_params.pkl'), 'wb+') as f:
             pickle.dump(train_params, f)
 
         super().__init__()
